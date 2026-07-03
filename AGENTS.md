@@ -38,7 +38,7 @@ It defines the shared visual language — colors, typography, spacing, component
 1. **NEVER push directly to `main`** - always use feature branches and PRs
 2. After code changes, commit with descriptive messages and push to feature branches
 3. Each submodule is an independent git repository
-4. **Always open a PR** after pushing changes - check each repo's rules for which branch to target (e.g., `test` vs `main`)
+4. **Always open a PR** after pushing changes — PRs target `main` in every submodule (the old `api`/`chat` `test`-branch staging flow is retired)
 
 ### Worktree Workflow
 
@@ -70,13 +70,7 @@ git worktree prune
 - Isolated environment for each feature branch
 - Easy cleanup after PR merge
 
-**api has an additional `test` branch:**
-- PRs should target `test`, not `main`
-- Before starting work, sync test with main: `git checkout test && git pull origin test && git fetch origin main && git merge origin/main && git push origin test`
-
-**chat has an additional `test` branch:**
-- PRs should target `test`, not `main`
-- Before starting work, sync test with main: `git checkout test && git pull origin test && git fetch origin main && git merge origin/main && git push origin test`
+**All submodules (including `api` and `chat`) take PRs against `main`.** The `test` branches in `api`/`chat` are retired as PR targets — do not open PRs against them or run the old test-sync ritual.
 
 ## Build Commands by Project
 

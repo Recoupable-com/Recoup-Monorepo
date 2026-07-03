@@ -118,9 +118,9 @@ npx mintlify@latest dev          # Preview docs locally
 - **MCP Server**: api provides MCP tools (like `send_email`) used by chat
 
 ### API Endpoints
-- **Chat**: `https://chat.recoupable.com/api`
-- **API**: `https://recoup-api.vercel.app/api`
-- **API Docs**: `https://developers.recoupable.com` (LLM-readable)
+- **Chat**: `https://chat.recoupable.dev/api`
+- **API**: `https://api.recoupable.dev/api`
+- **API Docs**: `https://docs.recoupable.dev` (LLM-readable: `/llms.txt`, `/llms-full.txt`)
 
 ### Shared Patterns
 
@@ -170,6 +170,6 @@ When making changes that span multiple submodules:
 
 ## Branding
 
-- **Support email**: `agent@recoupable.com`
-- **App URL**: `https://chat.recoupable.com`
-- **Website**: `https://recoupable.com`
+- **Support email**: `agent@recoupable.dev`
+- **App URL**: `https://chat.recoupable.dev`
+- **Website**: `https://recoupable.dev`

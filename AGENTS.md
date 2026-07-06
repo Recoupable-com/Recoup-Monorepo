@@ -38,7 +38,7 @@ It defines the shared visual language — colors, typography, spacing, component
 1. **NEVER push directly to `main`** - always use feature branches and PRs
 2. After code changes, commit with descriptive messages and push to feature branches
 3. Each submodule is an independent git repository
-4. **Always open a PR** after pushing changes - check each repo's rules for which branch to target (e.g., `test` vs `main`)
+4. **Always open a PR** after pushing changes - all submodule PRs target `main`
 
 ### Worktree Workflow
 
@@ -70,13 +70,7 @@ git worktree prune
 - Isolated environment for each feature branch
 - Easy cleanup after PR merge
 
-**api has an additional `test` branch:**
-- PRs should target `test`, not `main`
-- Before starting work, sync test with main: `git checkout test && git pull origin test && git fetch origin main && git merge origin/main && git push origin test`
-
-**chat has an additional `test` branch:**
-- PRs should target `test`, not `main`
-- Before starting work, sync test with main: `git checkout test && git pull origin test && git fetch origin main && git merge origin/main && git push origin test`
+**All submodule PRs target `main`.** The `test`-branch PR flow in `api` and `chat` was retired (api#750 merged 2026-07-03; chat#1843) — never target `test` in any repo.
 
 ## Build Commands by Project
 
@@ -155,6 +149,17 @@ npx skills add anthropics/skills        # install third-party skills
 ```
 
 This puts skills into `.agents/skills/` (and `.cursor/skills/`, `.claude/skills/`, etc. depending on your tooling). All installed skills — ours and third-party — live in the same place.
+
+### Internal issue workflow (use these proactively in this repo)
+
+GitHub-issue work in this monorepo runs on two internal skills. Their published descriptions are gated behind a literal `recoup-internal` keyword (so customers can't trip them in the public marketplace) — but **inside this repo that gate doesn't apply: reach for them directly without waiting for the keyword.**
+
+| Task | Skill |
+|------|-------|
+| Write / maintain a tracking issue (plan, update, check off, close out, log what shipped) | `recoup-internal-dev-issue-tracker` |
+| Implement a tracked issue end-to-end (docs-first → TDD → preview-verify → PR) | `recoup-internal-dev-ship-issue` |
+
+All issues live in `recoupable/chat` (link out to PRs/issues in other submodules). If these skills aren't installed, run `npx skills add recoupable/skills`.
 
 ### Building a new skill
 

@@ -1,6 +1,6 @@
 # DESIGN.md — Recoupable Design System
 
-> Updated: 2026-04-09
+> Updated: 2026-09-01
 
 ## 1. Product Context
 
@@ -10,12 +10,14 @@ The product has multiple frontends:
 
 | App | Role | URL |
 |-----|------|-----|
-| `chat` | Main product — AI chat + agent tools | chat.recoupable.com |
-| `marketing` | Public website, blog, landing pages | recoupable.com |
+| `app` | Main product — AI chat + agent tools | app.recoupable.dev |
+| `marketing` | Public website, blog, landing pages | recoupable.dev |
 | `admin` | Internal dashboard | (internal) |
-| `docs` | API documentation | developers.recoupable.com |
+| `docs` | API documentation | docs.recoupable.dev |
 
-This DESIGN.md is the **shared source of truth** across all frontends. App-specific overrides are noted where they diverge.
+**Scope: this document describes `marketing`.** `app` and `admin` are shadcn/ui applications that share the philosophy below but not the tokens — they define no `--brand`, no `--sky`, no pixel font. Sections that apply to one frontend say so.
+
+**The source of truth for any colour, radius or control height is that app's own `globals.css`**, never this file.
 
 ---
 
@@ -46,27 +48,15 @@ The interface is achromatic by default — near-black on white (light mode) or n
 
 ### Semantic Tokens
 
-All colors are defined as CSS custom properties. Light mode is `:root`, dark mode is `[data-theme="dark"]`.
+Both apps define colours as CSS custom properties, but the sets differ and you must read the one you are working in:
 
-| Token | Role | Light | Dark |
-|-------|------|-------|------|
-| `--brand` | Primary brand accent | `#000000` | `#ffffff` |
-| `--brand-hover` | Brand hover state | `#1a1a1a` | `#e5e5e5` |
-| `--brand-muted` | Subdued brand | `#6b6b6b` | `#999999` |
-| `--background` | Page background | `#ffffff` | `#0a0a0a` |
-| `--foreground` | Primary text | `#0a0a0a` | `#ededed` |
-| `--muted` | Subtle surface | `#f7f7f7` | `#151515` |
-| `--muted-foreground` | Secondary text | `#6b6b6b` | `#a0a0a0` |
-| `--border` | Borders, dividers | `#e8e8e8` | `#222222` |
-| `--card` | Card background | `#ffffff` | `#0a0a0a` |
-| `--card-foreground` | Card text | `#0a0a0a` | `#ededed` |
-| `--secondary` | Secondary surface | `#f0f0f0` | `#1a1a1a` |
-| `--primary` | Primary CTA background | `#0a0a0a` | `#ededed` |
-| `--primary-foreground` | Primary CTA text | `#ffffff` | `#0a0a0a` |
-| `--input` | Input borders | `#e8e8e8` | `#222222` |
-| `--destructive` | Error, danger | `#ef4444` | `#ef4444` |
-| `--ring` | Focus ring | `#0a0a0a` | `#ededed` |
-| `--sky` | Accent surface (sky blue) | `#e8f1f8` | `#0f1a24` |
+| | `marketing` | `app` and `admin` |
+|---|---|---|
+| Tokens | `--brand`, `--brand-hover`, `--brand-muted`, `--sky`, plus the shadcn names | shadcn defaults only |
+| Dark mode | `[data-theme="dark"]` | `.dark` (next-themes `attribute="class"`) |
+| File | `marketing/app/globals.css` | `app/globals.css` |
+
+Listing the values here is how they went stale.
 
 ### Functional Colors (not mode-dependent)
 
@@ -107,7 +97,9 @@ box-shadow:
   0px 8px 16px -4px rgba(0, 0, 0, 0.04);
 ```
 
-**Why shadow-as-border:** It avoids box model interference, enables smoother rounded corners, and allows multi-layer depth in a single declaration. This is the Vercel technique — we use it everywhere.
+**Why shadow-as-border:** It avoids box model interference, enables smoother rounded corners, and allows multi-layer depth in a single declaration.
+
+**Reality check:** almost nothing uses it. Measured 2026-09-01, `app` has 200 `border` utilities against 12 shadow-borders; `marketing` has 91 against **zero**. It is a technique available on a new surface, not a rule the code follows. Do not "fix" existing components to match it.
 
 ---
 
@@ -122,9 +114,9 @@ box-shadow:
 | Geist Sans | `--font-geist-sans` | The Technology | Body text, descriptions, subtitles — clean infrastructure |
 | Instrument Serif | `--font-display` / `.font-display` | The Music | Editorial moments, pull quotes, blog titles — emotional warmth |
 
-**Geist Pixel is the brand signature.** The bitmap/pixel font at display sizes is what makes Recoupable instantly recognizable. It says "built by machines, for the music industry." Every other AI company uses clean sans-serifs — the pixel font is the differentiator.
+**Geist Pixel is the brand signature — in `marketing`.** The bitmap/pixel font at display sizes is what makes Recoupable instantly recognizable.
 
-**Why four fonts:** Each serves a non-overlapping role. Remove any one and the hierarchy collapses or the personality flattens. Every font is load-bearing.
+**`app` and `admin` do not load it.** They ship Geist, Plus Jakarta Sans, Instrument Serif and Inter; the Geist Pixel files live only under `marketing/`. Whether the product should adopt it is an open product decision, not an assumption to take from this file.
 
 ### Type Scale
 
@@ -288,14 +280,7 @@ In the chat interface, the type system simplifies — Geist Pixel remains the di
 
 ### Border Radius Scale
 
-| Token | Value | Use |
-|-------|-------|-----|
-| `radius-sm` | `6px` | Small elements, inline badges |
-| `radius` | `12px` | Buttons, cards, inputs — the default |
-| `radius-lg` | `16px` | Chat bubbles, featured cards |
-| `radius-xl` | `24px` | Large panels, modal containers |
-| `radius-pill` | `9999px` | Badges, pills, tags |
-| `radius-full` | `50%` | Avatars, circular buttons |
+`--radius` differs by app: `marketing` sets `0.75rem` (12px), `app` sets `0.5rem` (8px), and the `sm`/`md`/`lg` steps derive from it. Read the `globals.css` you are in. Pills are `9999px` and avatars `50%` everywhere.
 
 ---
 
@@ -378,9 +363,8 @@ In the chat interface, the type system simplifies — Geist Pixel remains the di
 
 ### Do
 
-- Use Geist Pixel Square for H1 and H2 headlines — it's the brand signature at display sizes
-- Use shadow-as-border (`0px 0px 0px 1px var(--border)`) instead of CSS `border`
-- Use `#0a0a0a` instead of `#000000` for text in light mode — pure black is harsh
+- In `marketing`, use Geist Pixel Square for H1 and H2 headlines — it's the brand signature at display sizes
+- Prefer near-black over pure `#000000` for text in light mode — pure black is harsh
 - Use Geist Pixel at small sizes (12px) for inline tech labels — uppercase with wide tracking
 - Let album art and artist photos provide color — the UI stays achromatic
 - Use Instrument Serif Italic for editorial moments (blog titles, pull quotes) — not product UI
@@ -392,10 +376,9 @@ In the chat interface, the type system simplifies — Geist Pixel remains the di
 
 ### Don't
 
-- Don't use Geist Pixel for body copy or paragraphs — it's for headlines and labels only
+- Don't use Geist Pixel for body copy, or in `app`/`admin` at all — they don't load it
 - Don't use Instrument Serif for product UI headlines — that's Geist Pixel's role
 - Don't mix Plus Jakarta Sans and Geist in the same text line
-- Don't use CSS `border` on cards — use the shadow-border technique
 - Don't introduce warm colors (oranges, yellows) into the UI chrome
 - Don't apply color to UI chrome — color is for content and status only
 - Don't add a fifth font — four is already the maximum
@@ -409,17 +392,18 @@ In the chat interface, the type system simplifies — Geist Pixel remains the di
 
 ## 11. App-Specific Notes
 
-### chat (chat.recoupable.com)
+### app (app.recoupable.dev)
 
-The chat app is the **primary product**. Its design language is stripped-down but keeps the pixel identity:
-- Geist Pixel Square for page titles and section labels — maintains brand consistency
-- Plus Jakarta Sans for sidebar nav and UI controls
-- Geist Sans for message content
-- Geist Pixel at 12px uppercase for agent status indicators ("PROCESSING", "COMPLETE")
-- Message area: centered, max-width `768px`
-- AI response formatting: supports markdown, code blocks (Geist Mono), and tool output cards
+The **primary product**, and the surface this document describes least well. It is a shadcn/ui application:
+- Plus Jakarta Sans (`font-heading`) for page titles, Geist Sans for everything else. **No Geist Pixel, no `--brand`, no `--sky`.**
+- shadcn default tokens, `.dark` for dark mode, `--radius: 0.5rem`
+- shadcn control sizes: buttons `h-9` / `rounded-xl`, tabs `h-9` / `rounded-lg`
+- Page content column `max-w-2xl`, centered (`components/TasksPage/PageContainer.tsx`)
+- AI responses: markdown, code blocks (Geist Mono), tool output cards
 
-### marketing (recoupable.com)
+Build new `app` UI from the components already there, not from the marketing sections above.
+
+### marketing (recoupable.dev)
 
 The marketing site uses the **full four-font system** with Geist Pixel as the dominant display face:
 - Hero H1: Geist Pixel Square at `clamp(2.75rem, 8vw, 5.5rem)` — massive, unmistakable
@@ -442,7 +426,7 @@ The marketing site uses the **full four-font system** with Geist Pixel as the do
 
 ## 12. Agent Prompt Reference
 
-When generating UI components, use these prompts as starting points:
+Starting points **for `marketing`**. In `app` and `admin`, copy an existing component instead.
 
 **Card:**
 ```
@@ -458,13 +442,6 @@ tracking-tight, leading-[1.05], color var(--foreground).
 Subtitle: Geist Sans 400, clamp(1.0625rem, 1.6vw, 1.25rem), color var(--foreground)
 at 45% opacity. Primary CTA: Plus Jakarta Sans 600, var(--primary) bg, 12px radius.
 Dot-grid background: 64px squares at 5% opacity. Massive vertical spacing.
-```
-
-**Chat message (AI response):**
-```
-Background var(--muted). Text var(--foreground). Geist Sans 400 at text-body.
-Radius 16px 16px 16px 4px. Max-width 90%. Padding 12px 16px.
-Agent status below: Geist Pixel Square 12px uppercase, var(--muted-foreground).
 ```
 
 **Nav bar:**
